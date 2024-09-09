@@ -1,0 +1,25 @@
+<mat-form-field>
+  <mat-label>Search</mat-label>
+  <input matInput placeholder="Search" #input />
+  <mat-icon matSuffix>search</mat-icon>
+</mat-form-field>
+<div class="table">
+  <table mat-table [dataSource]="this.dataSource">
+    @for (column of columns(); track $index) {
+    <ng-container [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        (click)="openEditDialog(element, column)"
+      >
+        <p matTooltip="Edit" matTooltipPosition="right">
+          {{ element[column] }}
+        </p>
+      </td>
+    </ng-container>
+    }
+    <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns()"></tr>
+  </table>
+</div>

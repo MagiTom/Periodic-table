@@ -1,0 +1,13 @@
+@import "../../../styles/variables.scss";
+
+.table {
+  width: 80%;
+  margin: 1em auto;
+  p {
+    cursor: pointer;
+    width: fit-content;
+  }
+  P:hover {
+    color: $font-color-hover;
+  }
+}

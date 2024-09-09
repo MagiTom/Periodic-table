@@ -1,0 +1,14 @@
+@import ".../../styles/variables.scss";
+
+.section {
+  height: 100%;
+  padding: 1em;
+  text-align: center;
+  background-color: $primary-color-table;
+  .spinner {
+    margin: 1em auto;
+  }
+  h3 {
+    text-transform: uppercase;
+  }
+}
