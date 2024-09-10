@@ -89,7 +89,7 @@ export class TableComponent implements AfterViewInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((result: any) => {
-      if (result) {
+      if (result !== undefined) {
         const newElement: TableElement = {
           ...element,
           [column]: result,
