@@ -1,5 +1,13 @@
-import { Injectable, signal } from '@angular/core';
-import { delay, finalize, Observable, of } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { rxState } from '@rx-angular/state';
+import {
+  delay,
+  endWith,
+  map,
+  Observable,
+  of,
+  startWith
+} from 'rxjs';
 import { PeriodicElement } from '../models/PeriodicElement.model';
 
 const ELEMENT_DATA: PeriodicElement[] = [
@@ -15,17 +23,34 @@ const ELEMENT_DATA: PeriodicElement[] = [
   { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
 ];
 
+export interface ComponentState {
+  elements: PeriodicElement[];
+  loading: boolean;
+  searchValue: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class TableDataService {
-  private isLoadingSig = signal(false);
-  isLoading = this.isLoadingSig.asReadonly();
-  getTableData(): Observable<PeriodicElement[]> {
-    this.isLoadingSig.set(true);
-    return of(ELEMENT_DATA).pipe(
-      delay(2000),
-      finalize(() => this.isLoadingSig.set(false))
+  private state = rxState<ComponentState>(({ set, connect }) => {
+    set({ elements: [], loading: false });
+    connect(
+      this.getTableData().pipe(
+        map((elements) => ({ elements })),
+        startWith({ loading: true }),
+        endWith({ loading: false })
+      )
     );
+  });
+  loading = this.state.signal('loading');
+  elements = this.state.signal('elements');
+
+  updateElemets(newElements: PeriodicElement[]) {
+    this.state.set({ elements: newElements });
+  }
+
+  getTableData(): Observable<PeriodicElement[]> {
+    return of(ELEMENT_DATA).pipe(delay(2000));
   }
 }

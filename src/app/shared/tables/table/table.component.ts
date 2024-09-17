@@ -54,6 +54,7 @@ export class TableComponent implements AfterViewInit, OnDestroy {
   private unsub = new Subject<void>();
   tableEffect = effect(() => {
     const data = this.data();
+    console.log('table', this.data())
 
     untracked(() => {
       this.dataSource = new MatTableDataSource(data);

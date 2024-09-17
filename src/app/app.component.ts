@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterOutlet } from '@angular/router';
+import { RxIf } from '@rx-angular/template/if';
 import { PeriodicElement } from './models/PeriodicElement.model';
 import { TableEdit } from './models/TableElement.model';
 import { TableDataService } from './services/table-data.service';
@@ -10,23 +11,16 @@ import { TableComponent } from './shared/tables/table/table.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TableComponent, MatProgressSpinnerModule],
+  imports: [RouterOutlet, TableComponent, MatProgressSpinnerModule, RxIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private _snackBar = inject(MatSnackBar);
   private tableDataService = inject(TableDataService);
   columns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = signal<PeriodicElement[]>([]);
-  isLoading = this.tableDataService.isLoading;
-
-  ngOnInit(): void {
-    this.tableDataService.getTableData().subscribe({
-      next: (data) => this.dataSource.set(data),
-      error: () => alert('Data cannot be downloaded!'),
-    });
-  }
+  dataSource = this.tableDataService.elements;
+  isLoading = this.tableDataService.loading;
 
   editElement(editData: TableEdit<PeriodicElement>) {
     const { newElement, oldElement } = editData;
@@ -40,11 +34,10 @@ export class AppComponent implements OnInit {
         return;
       }
     }
-    this.dataSource.update((items) =>
-      items.map((item) =>
-        item.position == oldElement.position ? newElement : item
-      )
+    const newElements = this.dataSource().map((item) =>
+      item.position == oldElement.position ? newElement : item
     );
+    this.tableDataService.updateElemets(newElements);
   }
 
   checkIfPositionExist(element: PeriodicElement): boolean {

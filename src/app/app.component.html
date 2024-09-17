@@ -1,12 +1,11 @@
 <div class="section">
   <h3>Periodic table</h3>
-  @if(isLoading()){
-  <mat-spinner class="spinner"></mat-spinner>
-  } @else {
-  <app-table
+  <mat-spinner *rxIf="isLoading()" class="spinner"></mat-spinner>
+
+  <app-table *rxIf="!isLoading()"
     (onEdit)="editElement($event)"
     [columns]="columns"
     [data]="dataSource()"
   ></app-table>
-  }
+  
 </div>
